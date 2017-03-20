@@ -1,0 +1,80 @@
+1、 安装模块
+
+```
+npm install angular2-image-upload --save
+```
+2、配置app.module.ts
+
+```
+@NgModule({
+    imports: [
+        ...,
+        ImageUploadModule.forRoot(),
+        ...
+    ]
+})
+```
+3、模板中使用
+
+```
+<image-upload></image-upload>
+```
+4、配置信息
+
+```
+  [max]="100"  上传文件最大限制
+  [url]="'example.com/images/upload'" 上传服务器地址
+  [headers]="[
+    {header: 'Authorization', value: 'MyToken'}
+  ]"
+  [buttonCaption]="'选择图片'"
+  [dropBoxMessage]="'拖动到此区域'"
+    // 添加图片
+  (onFileUploadFinish)="imageUploaded($event)"
+    // 删除图片
+  (onRemove)="imageRemoved($event)"
+    // 处于挂起状态时候，触发这个事件，上传中，可以禁止确定按钮等...
+  (isPending)="disableSendButton($event)"
+```
+5、处理选择的图片信息
+
+```
+// 组件
+import {Component} from "@angular/core";
+@Component({
+  selector: "oa-add-friends",
+  templateUrl: "../templates/add_friends.component.html"
+})
+export class AddFriendsComponent {
+  file: Array<Object>;
+  constructor() {
+    this.file = [];
+  }
+
+  imageUploaded(event) {
+    console.log(event);
+    this.file.push(event.file);
+    console.log(this.file);
+  }
+  imageRemoved(event) {
+    console.log(event);
+    let index = this.file.indexOf(event.file);
+    if( index > -1) {
+      this.file.splice(index, 1);
+    }
+    console.log(this.file);
+  }
+}
+
+// 界面
+<image-upload
+  [buttonCaption]="'选择图片'"
+  [dropBoxMessage]="'拖动图片到这里'"
+  (onFileUploadFinish)="imageUploaded($event)"
+  (onRemove)="imageRemoved($event)"
+></image-upload>
+
+<p *ngFor="let item of file">
+  {{item.name}}
+</p>
+```
